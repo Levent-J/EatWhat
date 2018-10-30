@@ -1,22 +1,22 @@
 package com.levent_j.eatwaht.random;
 
 import android.content.Intent;
-import android.view.View;
-import android.widget.Button;
+import android.widget.Toast;
 
 import com.levent_j.eatwaht.R;
 import com.levent_j.eatwaht.base.BaseActivity;
-import com.levent_j.eatwaht.foodlist.FoodListActivity;
+import com.levent_j.eatwaht.views.IRandomView;
+import com.levent_j.eatwaht.views.RandomView;
 
-import java.util.Random;
+import java.util.ArrayList;
 
 /**
  * @auther : levent_j on 2018/10/28.
  * @desc :
  */
-public class FoodRandomActivity extends BaseActivity implements IFoodRandomView, View.OnClickListener {
+public class FoodRandomActivity extends BaseActivity implements IFoodRandomView, IRandomView {
 
-    private Button mStartRandom;
+    private RandomView mRandomView;
 
     private FoodRandomPresenter mRandomPresenter;
 
@@ -28,11 +28,14 @@ public class FoodRandomActivity extends BaseActivity implements IFoodRandomView,
     @Override
     public void init() {
 
-        mStartRandom = findViewById(R.id.btn_start);
-        mStartRandom.setOnClickListener(this);
+        mRandomView = findViewById(R.id.view_random);
+
+        mRandomView.setmRandomViewCallback(this);
 
         mRandomPresenter = new FoodRandomPresenter(this);
         addPresenter(mRandomPresenter);
+
+        mRandomPresenter.getAllItems();
     }
 
     public static void openActivity(BaseActivity activity){
@@ -41,23 +44,25 @@ public class FoodRandomActivity extends BaseActivity implements IFoodRandomView,
     }
 
     @Override
-    public void onRandomStart() {
-        //做一些初始化
+    public void onGetRandomItem(String s) {
+        //
+        mRandomView.setResultItem(s);
     }
 
     @Override
-    public void onRandomComplete(String result) {
+    public void onGetAllItems(ArrayList<String> result) {
         //展示结果
-        mStartRandom.setText(result);
+        mRandomView.setAllItems(result);
+    }
+
+
+    @Override
+    public void onStartRandomView() {
+        mRandomPresenter.getRandomItem();
     }
 
     @Override
-    public void onClick(View v) {
-        switch (v.getId()){
-            case R.id.btn_start:
-                //如果可以点击的话
-                mRandomPresenter.getRandomItem();
-                break;
-        }
+    public void onStopRandomView() {
+
     }
 }
